@@ -1,4 +1,43 @@
 ﻿<!DOCTYPE html>
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<style>
+    .box-card {
+        background-color: beige;
+        height: 100%;
+    }
+
+    td {
+        width: 45px;
+        height: 45px;
+    }
+
+    table {
+        margin-left: 30%;
+    }
+
+    table tr td {
+        border: 1px solid #999999;
+    }
+
+    .circle {
+        width: 40px;
+        height: 40px;
+        background: #333;
+        -moz-border-radius: 20px;
+        -webkit-border-radius: 20px;
+        border-radius: 20px;
+        margin-top: 4px;
+        margin-left: 27px;
+        position: absolute;
+    }
+
+    .circle-white {
+        width: 35px;
+        height: 35px;
+        background: whitesmoke;
+        border: #333 solid 3px;
+    }
+</style>
 <html>
 
     <head>
@@ -7,28 +46,32 @@
     </head>
 
     <body>
-        <div>
-            test
+        <div id="app">
+            <el-card class="box-card">
+                <div slot="header" class="clearfix">
+                    <span>棋盘</span>
+                    <el-button style="float: right; padding: 3px 0" type="text">操作</el-button>
+                </div>
+                <table>
+                    <tr v-for="i in 14">
+                        <td v-for="o in 14">
+                            <template v-if="o!=14&&i!=14">
+                                <div class="circle" v-if="o%2==0||i%2==0"></div>
+                                <div class="circle circle-white" v-else></div>
+                            </template>
+
+                        </td>
+                    </tr>
+                </table>
+            </el-card>
         </div>
     </body>
 
 </html>
 <script src="node_modules\@aspnet\signalr\dist\browser\signalr.js"></script>
-<script>
-    const connection = new signalR.HubConnectionBuilder()
-        .withUrl("http://118.24.27.231:5001/ws?token=123")
-        .configureLogging(signalR.LogLevel.Information)
-        .build();
-
-    connection.start().then(function () {
-        console.log("connected");
-        window.setInterval(() => {
-            connection.invoke("ping");
-        }, 7000);
-    });
-
-    connection
-
-
-
-</script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.6.9/vue.min.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="socket.js"></script>
+<script src="index.js"></script>
+<script
