@@ -30,7 +30,7 @@ namespace SocketAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            
+
 
             if (env.IsDevelopment())
             {
@@ -47,7 +47,7 @@ namespace SocketAPI
             //注册ChatHub
             app.UseSignalR(builder =>
             {
-                builder.MapHub<Hub.Hub>("/ws");
+                builder.MapHub<SocketAPI.Hub.Hub>("/ws");
             });
         }
 
