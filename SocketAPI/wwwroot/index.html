@@ -16,11 +16,19 @@
 <script src="node_modules\@aspnet\signalr\dist\browser\signalr.js"></script>
 <script>
     const connection = new signalR.HubConnectionBuilder()
-        .withUrl("http://127.0.0.1:5001/ws")
+        .withUrl("http://118.24.27.231:5001/ws?token=123")
         .configureLogging(signalR.LogLevel.Information)
         .build();
 
     connection.start().then(function () {
         console.log("connected");
+        window.setInterval(() => {
+            connection.invoke("ping");
+        }, 7000);
     });
+
+    connection
+
+
+
 </script>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.SignalR;
+using System.Threading.Tasks;
 
 namespace SocketAPI.Controllers
 {
@@ -7,10 +8,18 @@ namespace SocketAPI.Controllers
     [ApiController]
     public class SendController : ControllerBase
     {
-        [HttpGet]
-        public ActionResult<IEnumerable<string>> Get(string token, string msg)
+        private readonly IHubContext<Hub.Hub> _hubContext;
+
+        public SendController(IHubContext<Hub.Hub> hubContext)
         {
-            return new[] { token, msg };
+            _hubContext = hubContext;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<string>> Get(string token, string msg)
+        {
+            await _hubContext.Clients.Group(token).SendAsync("Send", msg);
+            return "OK";
         }
     }
 }
