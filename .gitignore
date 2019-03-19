@@ -50,6 +50,7 @@ BenchmarkDotNet.Artifacts/
 
 # .NET Core
 project.lock.json
+node_modules/
 project.fragment.lock.json
 artifacts/
 **/Properties/launchSettings.json
