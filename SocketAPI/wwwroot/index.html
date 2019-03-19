@@ -12,7 +12,7 @@
     }
 
     table {
-        margin-left: 30%;
+        margin-left: 18%;
     }
 
     table tr td {
@@ -29,6 +29,7 @@
         margin-top: 4px;
         margin-left: 27px;
         position: absolute;
+        display: none;
     }
 
     .circle-white {
@@ -47,23 +48,40 @@
 
     <body>
         <div id="app">
-            <el-card class="box-card">
-                <div slot="header" class="clearfix">
-                    <span>棋盘</span>
-                    <el-button style="float: right; padding: 3px 0" type="text">操作</el-button>
-                </div>
-                <table>
-                    <tr v-for="i in 14">
-                        <td v-for="o in 14">
-                            <template v-if="o!=14&&i!=14">
-                                <div class="circle" v-if="o%2==0||i%2==0"></div>
-                                <div class="circle circle-white" v-else></div>
-                            </template>
+            <el-row :gutter="20">
+                <el-col :span="18">
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <span>棋盘</span><br>
+                            <span>我：{{self}}</span><br>
+                            <span v-if="control=='b'">执黑</span>
+                            <span v-if="control=='w'">执白</span>
+                            <span v-if="control=='k'">观战</span>
+                            <el-button style="float: right; padding: 3px 0" type="text">操作</el-button>
+                        </div>
+                        <table>
+                            <tr v-for="i in 14">
+                                <td v-for="o in 14">
+                                    <template v-if="o!=14&&i!=14">
+                                        <div class="circle"></div>
+                                        <div class="circle circle-white"></div>
+                                    </template>
+                                </td>
+                            </tr>
+                        </table>
+                    </el-card>
+                </el-col>
 
-                        </td>
-                    </tr>
-                </table>
-            </el-card>
+                <el-col :span="6">
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <span>在线用户</span>
+                            <el-button style="float: right; padding: 3px 0" type="text">操作</el-button>
+                        </div>
+                        <div v-for="item in personnel">{{item}}</div>
+                    </el-card>
+                </el-col>
+            </el-row>
         </div>
     </body>
 
@@ -74,4 +92,3 @@
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script src="socket.js"></script>
 <script src="index.js"></script>
-<script

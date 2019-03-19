@@ -84,7 +84,7 @@ namespace SocketAPI
                 {
                     option.ConnectionFactory = async writer =>
                     {
-                        var connection = await ConnectionMultiplexer.ConnectAsync("118.24.27.231:6379,password=sun940622");
+                        var connection = await ConnectionMultiplexer.ConnectAsync(Consts.RedisSite);
                         connection.ConnectionFailed += (sender, e) =>           // redis连接失败记录日志
                         {
                             // todo 

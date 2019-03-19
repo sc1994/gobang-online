@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SocketAPI.Hub
@@ -9,14 +12,26 @@ namespace SocketAPI.Hub
         Task Send(string message);
 
         Task Pong(string message);
+
+        Task UpLine(string message);
+
+        Task DownLine(string message);
+
+        Task ListenSelf(string message);
+
+        Task AllOnLine(List<string> all);
+
+        Task GameRestart();
     }
 
     public class Hub : Microsoft.AspNetCore.SignalR.Hub<IHub>
     {
         private readonly HttpContext _httpContext;
+        private readonly RedisMethods _redis;
 
         public Hub(IHttpContextAccessor hca)
         {
+            _redis = new RedisMethods();
             _httpContext = hca.HttpContext;
         }
 
@@ -51,6 +66,9 @@ namespace SocketAPI.Hub
             {
                 // 将token关联到connectionId
                 await Groups.AddToGroupAsync(Context.ConnectionId, token);
+                _redis.ListRightPush(token, Context.ConnectionId); ;
+                await Clients.Caller.ListenSelf(Context.ConnectionId);
+                await Clients.Group(token).AllOnLine(_redis.ListRange<string>(token));
             }
             await base.OnConnectedAsync();
         }
@@ -64,6 +82,13 @@ namespace SocketAPI.Hub
         {
             var token = _httpContext.Request.Query["token"];
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, token);
+            _redis.ListRemove(token, Context.ConnectionId);
+            var isRestart = _redis.ListRange<string>(token, 0, 2).Any(x => x == Context.ConnectionId);
+            if (isRestart)
+            {
+                await Clients.Groups(token).GameRestart();
+            }
+            await Clients.Group(token).AllOnLine(_redis.ListRange<string>(token));
             await base.OnDisconnectedAsync(exception);
         }
     }
