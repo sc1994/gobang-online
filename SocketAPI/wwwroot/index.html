@@ -16,7 +16,7 @@
 <script src="node_modules\@aspnet\signalr\dist\browser\signalr.js"></script>
 <script>
     const connection = new signalR.HubConnectionBuilder()
-        .withUrl("http://118.24.27.231:5001/ws")
+        .withUrl("http://localhost/ws")
         .configureLogging(signalR.LogLevel.Information)
         .build();
 

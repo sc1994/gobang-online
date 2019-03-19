@@ -21,7 +21,7 @@ namespace SocketAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             ConfigureCors(services);
             ConfigureSignalR(services);
             Transfuse(services);
@@ -30,7 +30,7 @@ namespace SocketAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseCors("SignalR");         // 启用跨域
+            
 
             if (env.IsDevelopment())
             {
@@ -38,7 +38,8 @@ namespace SocketAPI
             }
 
             app.UsePathBase("/service");    // 启用二级目录
-            app.UseStaticFiles("/wwwroot"); // 静态文件服务
+            app.UseCors("SignalR");         // 启用跨域
+            //app.UseStaticFiles("/wwwroot"); // 静态文件服务
             app.UseHttpsRedirection();      // 启用http上下文
 
             app.UseMvc();
