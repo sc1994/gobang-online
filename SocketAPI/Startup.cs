@@ -44,7 +44,7 @@ namespace SocketAPI
             //注册ChatHub
             app.UseSignalR(builder =>
             {
-                //builder.MapHub<ChatHub>("/ws");
+                builder.MapHub<Hub.Hub>("/ws");
             });
         }
 
