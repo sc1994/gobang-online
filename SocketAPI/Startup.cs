@@ -30,13 +30,14 @@ namespace SocketAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseCors("SignalR");         // 启用跨域
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
             app.UsePathBase("/service");    // 启用二级目录
-            app.UseCors("SignalR");         // 启用跨域
             app.UseStaticFiles("/wwwroot"); // 静态文件服务
             app.UseHttpsRedirection();      // 启用http上下文
 
