@@ -1,7 +1,7 @@
 function init(room) {
   var connection = new signalR.HubConnectionBuilder()
     .withUrl(`http://localhost:5001/ws?token=${room}`)
-    .configureLogging(signalR.LogLevel.Error)
+    .configureLogging(signalR.LogLevel.Warning)
     .build();
 
   connection.start().then(function () {
@@ -24,7 +24,11 @@ function init(room) {
   });
 
   connection.on("GameRestart", _ => {
-    alert("参战人员离开，游戏结束！");
+    console.warn("参战人员离开，游戏结束");
+  });
+
+  connection.on("Pong", _ => {
+    console.log("pong");
   });
 }
 

@@ -2,7 +2,9 @@
 using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace SocketAPI.Hub
@@ -21,7 +23,7 @@ namespace SocketAPI.Hub
 
         Task AllOnLine(List<string> all);
 
-        Task GameRestart();
+        Task GameRestart(string again);
     }
 
     public class Hub : Microsoft.AspNetCore.SignalR.Hub<IHub>
@@ -82,12 +84,15 @@ namespace SocketAPI.Hub
         {
             var token = _httpContext.Request.Query["token"];
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, token);
-            _redis.ListRemove(token, Context.ConnectionId);
-            var isRestart = _redis.ListRange<string>(token, 0, 2).Any(x => x == Context.ConnectionId);
+
+            var sign = _redis.ListRange<string>(token, 0, 1);
+            var isRestart = sign.Contains(Context.ConnectionId);
             if (isRestart)
             {
-                await Clients.Groups(token).GameRestart();
+                await Clients.Groups(token).GameRestart("again");
             }
+
+            _redis.ListRemove(token, Context.ConnectionId);
             await Clients.Group(token).AllOnLine(_redis.ListRange<string>(token));
             await base.OnDisconnectedAsync(exception);
         }

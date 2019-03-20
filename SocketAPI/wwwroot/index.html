@@ -12,11 +12,13 @@
     }
 
     table {
-        margin-left: 18%;
+        border-collapse: collapse;
     }
 
-    table tr td {
-        border: 1px solid #999999;
+    table,
+    td,
+    th {
+        border: 1px solid #555;
     }
 
     .circle {
@@ -29,7 +31,13 @@
         margin-top: 4px;
         margin-left: 27px;
         position: absolute;
-        display: none;
+        opacity: 0.1;
+        filter: alpha(opacity=10);
+    }
+
+    .circle:hover {
+        opacity: 0.7;
+        filter: alpha(opacity=70);
     }
 
     .circle-white {
@@ -53,22 +61,28 @@
                     <el-card class="box-card">
                         <div slot="header" class="clearfix">
                             <span>棋盘</span><br>
-                            <span>我：{{self}}</span><br>
+                            <span>我：{{self}}</span>
+                            <br>
                             <span v-if="control=='b'">执黑</span>
                             <span v-if="control=='w'">执白</span>
                             <span v-if="control=='k'">观战</span>
                             <el-button style="float: right; padding: 3px 0" type="text">操作</el-button>
                         </div>
-                        <table>
-                            <tr v-for="i in 14">
-                                <td v-for="o in 14">
-                                    <template v-if="o!=14&&i!=14">
-                                        <div class="circle"></div>
-                                        <div class="circle circle-white"></div>
-                                    </template>
-                                </td>
-                            </tr>
-                        </table>
+                        <div style="text-align: center;">
+                            <h3>执黑走棋</h3>
+                        </div>
+                        <div style="text-align: -webkit-center;">
+                            <table>
+                                <tr v-for="i in 13">
+                                    <td v-for="o in 13">
+                                        <template v-if="o!=13&&i!=13">
+                                            <div class="circle"></div>
+                                            <!-- <div class="circle circle-white"></div> -->
+                                        </template>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                     </el-card>
                 </el-col>
 
