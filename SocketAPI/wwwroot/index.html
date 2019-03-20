@@ -35,16 +35,21 @@
         filter: alpha(opacity=10);
     }
 
-    .circle:hover {
-        opacity: 0.7;
-        filter: alpha(opacity=70);
-    }
-
     .circle-white {
         width: 35px;
         height: 35px;
         background: whitesmoke;
         border: #333 solid 3px;
+    }
+
+    .circle-hover:hover {
+        opacity: 0.8;
+        filter: alpha(opacity=80);
+    }
+
+    .circle-down {
+        opacity: 1;
+        filter: alpha(opacity=100);
     }
 </style>
 <html>
@@ -73,11 +78,14 @@
                         </div>
                         <div style="text-align: -webkit-center;">
                             <table>
-                                <tr v-for="i in 13">
-                                    <td v-for="o in 13">
-                                        <template v-if="o!=13&&i!=13">
-                                            <div class="circle"></div>
-                                            <!-- <div class="circle circle-white"></div> -->
+                                <tr v-for="(row,i) in chess">
+                                    <td v-for="(col,j) in row">
+                                        <template v-if="i!=chess.length-1&&j!=chess.length-1">
+                                            <div :class="circleDown(col.s)" v-if="col.r ? col.r=='b' : control=='b'" @click="down(col)">
+                                            </div>
+                                            <div :class="circleDown(col.s)+' circle-white'" v-if="col.r ? col.r=='w' : control=='w'"
+                                                @click="down(col)">
+                                            </div>
                                         </template>
                                     </td>
                                 </tr>

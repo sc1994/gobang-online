@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace SocketAPI.Hub
@@ -24,12 +21,16 @@ namespace SocketAPI.Hub
         Task AllOnLine(List<string> all);
 
         Task GameRestart(string again);
+
+        Task DownPieceMsg(string chess);
     }
 
     public class Hub : Microsoft.AspNetCore.SignalR.Hub<IHub>
     {
         private readonly HttpContext _httpContext;
         private readonly RedisMethods _redis;
+        private static string RoomKey(string token) => $"room:{token}";
+        private static string ChessKey(string token) => $"chess:{token}";
 
         public Hub(IHttpContextAccessor hca)
         {
@@ -58,6 +59,18 @@ namespace SocketAPI.Hub
         }
 
         /// <summary>
+        /// 落子
+        /// </summary>
+        /// <param name="chess"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task DownPiece(string token, string chess)
+        {
+            _redis.StringSet(ChessKey(token), chess);
+            await Clients.Group(token).DownPieceMsg(_redis.StringGet<string>(ChessKey(token)));
+        }
+
+        /// <summary>
         /// 上线拦截
         /// </summary>
         /// <returns></returns>
@@ -68,9 +81,9 @@ namespace SocketAPI.Hub
             {
                 // 将token关联到connectionId
                 await Groups.AddToGroupAsync(Context.ConnectionId, token);
-                _redis.ListRightPush(token, Context.ConnectionId); ;
+                _redis.ListRightPush(RoomKey(token), Context.ConnectionId); ;
                 await Clients.Caller.ListenSelf(Context.ConnectionId);
-                await Clients.Group(token).AllOnLine(_redis.ListRange<string>(token));
+                await Clients.Group(token).AllOnLine(_redis.ListRange<string>(RoomKey(token)));
             }
             await base.OnConnectedAsync();
         }
@@ -85,15 +98,15 @@ namespace SocketAPI.Hub
             var token = _httpContext.Request.Query["token"];
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, token);
 
-            var sign = _redis.ListRange<string>(token, 0, 1);
+            var sign = _redis.ListRange<string>(RoomKey(token), 0, 1);
             var isRestart = sign.Contains(Context.ConnectionId);
             if (isRestart)
             {
                 await Clients.Groups(token).GameRestart("again");
             }
 
-            _redis.ListRemove(token, Context.ConnectionId);
-            await Clients.Group(token).AllOnLine(_redis.ListRange<string>(token));
+            _redis.ListRemove(RoomKey(token), Context.ConnectionId);
+            await Clients.Group(token).AllOnLine(_redis.ListRange<string>(RoomKey(token)));
             await base.OnDisconnectedAsync(exception);
         }
     }

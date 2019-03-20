@@ -1,5 +1,6 @@
+var connection;
 function init(room) {
-  var connection = new signalR.HubConnectionBuilder()
+  connection = new signalR.HubConnectionBuilder()
     .withUrl(`http://localhost:5001/ws?token=${room}`)
     .configureLogging(signalR.LogLevel.Warning)
     .build();
@@ -30,16 +31,22 @@ function init(room) {
   connection.on("Pong", _ => {
     console.log("pong");
   });
+
+  connection.on("DownPieceMsg", msg => {
+    vm.chess = JSON.parse(msg);
+  });
 }
 
-function Send(token, msg) {
-  axios.get(`http://localhost:5001/service/send?token=${token}&msg=${msg}`)
-    .then(x => {
-      console.log(x);
-    })
-    .catch(e => {
-      console.log(e);
-    });
+function DownPiece(token, msg) {
+  // axios.get(`http://localhost:5001/service/send?token=${token}&msg=${msg}`)
+  //   .then(x => {
+  //     console.log(x);
+  //   })
+  //   .catch(e => {
+  //     console.log(e);
+  //   });
+  connection.invoke("DownPiece", msg, token)
+    .catch(err => console.error(err.toString()));
 }
 
 function RandomToken() {

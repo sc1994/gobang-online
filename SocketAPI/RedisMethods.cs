@@ -25,9 +25,32 @@ namespace SocketAPI
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public long StringInc(string key, long value)
+        public long StringIncrement(string key, long value)
         {
             return _db.StringIncrement(key, value);
+        }
+
+        /// <summary>
+        /// Set
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public bool StringSet<T>(string key, T value)
+        {
+            return _db.StringSet(key, JsonConvert.SerializeObject(value));
+        }
+
+        /// <summary>
+        /// Get
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public T StringGet<T>(string key)
+        {
+            return JsonConvert.DeserializeObject<T>(_db.StringGet(key));
         }
 
         /// <summary>
