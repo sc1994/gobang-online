@@ -74,17 +74,15 @@
                             <el-button style="float: right; padding: 3px 0" type="text">操作</el-button>
                         </div>
                         <div style="text-align: center;">
-                            <h3>执黑走棋</h3>
+                            <h3 v-if="downCount==0">自方走棋</h3>
+                            <h3 v-else>对方走棋</h3>
                         </div>
                         <div style="text-align: -webkit-center;">
                             <table>
                                 <tr v-for="(row,i) in chess">
                                     <td v-for="(col,j) in row">
                                         <template v-if="i!=chess.length-1&&j!=chess.length-1">
-                                            <div :class="circleDown(col.s)" v-if="col.r ? col.r=='b' : control=='b'" @click="down(col)">
-                                            </div>
-                                            <div :class="circleDown(col.s)+' circle-white'" v-if="col.r ? col.r=='w' : control=='w'"
-                                                @click="down(col)">
+                                            <div :class="circleDown(col)" @click="down(col)">
                                             </div>
                                         </template>
                                     </td>

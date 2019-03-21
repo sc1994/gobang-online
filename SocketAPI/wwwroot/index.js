@@ -8,19 +8,30 @@ var vm = new Vue({
     downCount: 0
   },
   methods: {
-    circleDown: function (s) {
-      if (s) {
+    circleDown: function (col) {
+      if (col.s == "b")
         return "circle circle-down";
-      }
-      else {
+      else if (col.s == "w")
+        return "circle circle-down circle-white";
+      else if (col.r ? col.r == 'b' : this.control == 'b')
         return "circle circle-hover";
-      }
+      else if (col.r ? col.r == 'w' : this.control == 'w')
+        return "circle circle-hover circle-white";
     },
     down: function (col) {
+      if (this.control == "k") {
+        console.log("观战模式不可落子");
+        return;
+      }
+      if (this.downCount != 0) {
+        this.$message('等待对方落子');
+        return;
+      }
       if (col.s) {
         console.warn("已有子位置，落子验证。");
+        return;
       }
-      col.s = true;
+      col.s = this.control;
       DownPiece(JSON.stringify(this.chess), UrlKey("room"));
     }
   },
@@ -29,11 +40,16 @@ var vm = new Vue({
       var i = val.indexOf(this.self);
       if (i == 0) {
         this.control = "b"; //执黑
+        this.downCount = 0;
       } else if (i == 1) {
         this.control = "w"; // 执白
+        this.downCount = 1;
       } else {
         this.control = "k"; // 观战
       }
+    },
+    downCount: function () {
+      console.log(this.downCount);
     }
   },
   mounted: function () {
@@ -46,16 +62,6 @@ var vm = new Vue({
 
     }
     init(room);
-    for (var i = 0; i < 13; i++) {
-      var temp = [];
-      for (var j = 0; j < 13; j++) {
-        temp.push({
-          c: [i, j].toString(), // 位置
-          s: false,             // 是否有子
-          r: this.control       // 属于谁
-        });
-      }
-      this.chess.push(temp);
-    }
+    this.chess = InitChess();
   }
 });

@@ -1,7 +1,7 @@
 var connection;
 function init(room) {
   connection = new signalR.HubConnectionBuilder()
-    .withUrl(`http://localhost:5001/ws?token=${room}`)
+    .withUrl(`http://118.24.27.231:5001/ws?token=${room}`)
     .configureLogging(signalR.LogLevel.Warning)
     .build();
 
@@ -25,7 +25,8 @@ function init(room) {
   });
 
   connection.on("GameRestart", _ => {
-    console.warn("参战人员离开，游戏结束");
+    alert("参战人员离开，游戏结束");
+    vm.chess = InitChess();
   });
 
   connection.on("Pong", _ => {
@@ -34,7 +35,28 @@ function init(room) {
 
   connection.on("DownPieceMsg", msg => {
     vm.chess = JSON.parse(msg);
+    console.log(vm.chess);
+    vm.downCount++;
+    if (vm.downCount >= 2) {
+      vm.downCount = 0;
+    }
   });
+}
+
+function InitChess() {
+  var chess = [];
+  for (var i = 0; i < 13; i++) {
+    var temp = [];
+    for (var j = 0; j < 13; j++) {
+      temp.push({
+        c: [i, j].toString(), // 位置
+        s: "",                // 是否有子
+        r: ""                 // 属于谁
+      });
+    }
+    chess.push(temp);
+  }
+  return chess;
 }
 
 function DownPiece(token, msg) {
