@@ -28,10 +28,14 @@ var vm = new Vue({
         return;
       }
       if (col.s) {
-        console.warn("已有子位置，落子验证。");
+        this.$message('落在别的地方吧');
         return;
       }
       col.s = this.control;
+      axios.post(`${baseUrl}/service/send?token=${UrlKey("room")}&control=${this.control}`, this.chess)
+        .then(res => {
+          console.log(res);
+        });
       DownPiece(JSON.stringify(this.chess), UrlKey("room"));
     }
   },
