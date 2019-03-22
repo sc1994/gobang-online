@@ -10,21 +10,18 @@ namespace SocketAPI.Rules
         /// <summary>
         /// 判断整个棋盘的胜负（12轴遍历）
         /// </summary>
-        /// <param name="control"></param>
-        /// <param name="checkerboard"></param>
+        /// <param name="current"></param>
+        /// <param name="total"></param>
         /// <returns></returns>
-        public static bool AssertChessboard1(string control, List<List<ChessPieces>> checkerboard)
+        public static bool AssertChessboard1(IEnumerable<ChessPieces> current, int total)
         {
-            var current = checkerboard.SelectMany(x => x) // 当前人全部的落子
-                .Where(x => x.Role == control);
-
-            for (var i = 0; i < checkerboard.Count; i++)
+            for (var i = 0; i < total; i++)
             {
-                if (current.Where(x => x.Item[0] == i).MaxContinuous(ChessPiecesForm.X轴) >= 5) // x轴超5子
+                if (current.Where(x => x.Item[0] == i).MaxContinuous(ChessPiecesForm.X轴)?.Max() >= 5) // x轴超5子
                 {
                     return true;
                 }
-                if (current.Count(x => x.Item[1] == i) >= 5) // y轴超5子
+                if (current.Where(x => x.Item[1] == i).MaxContinuous(ChessPiecesForm.Y轴)?.Max() >= 5) // y轴超5子
                 {
                     return true;
                 }
@@ -37,8 +34,6 @@ namespace SocketAPI.Rules
                     return true;
                 }
             }
-
-
             return false;
         }
 
@@ -54,25 +49,55 @@ namespace SocketAPI.Rules
         }
 
         /// <summary>
-        /// 最大连续性
+        /// 连续性
         /// </summary>
         /// <param name="checkerboard">连续的棋子</param>
         /// <param name="from">棋子形态</param>
         /// <returns></returns>
-        private static int MaxContinuous(this IEnumerable<ChessPieces> checkerboard, ChessPiecesForm from)
+        private static List<int> MaxContinuous(this IEnumerable<ChessPieces> checkerboard, ChessPiecesForm from)
         {
-
+            List<int> countList = null;
+            var count = 0;
             switch (from)
             {
                 case ChessPiecesForm.X轴:
                     checkerboard = checkerboard.OrderBy(x => x.Item[1]);
-                    while (true)
+                    for (var i = 0; i < checkerboard.Count(); i++)
                     {
-                        //checkerboard.
+                        if (checkerboard.ElementAt(i).Item[1] - checkerboard.ElementAtOrDefault(i + 1)?.Item[1] == -1)
+                        {
+                            ++count;
+                        }
+                        else
+                        {
+                            if (countList == null) countList = new List<int>();
+                            countList.Add(++count);
+                            count = 0;
+                        }
                     }
-                    break;
+                    return countList;
+                case ChessPiecesForm.Y轴:
+                    checkerboard = checkerboard.OrderBy(x => x.Item[0]);
+                    for (var i = 0; i < checkerboard.Count(); i++)
+                    {
+                        if (checkerboard.ElementAt(i).Item[0] - checkerboard.ElementAtOrDefault(i + 1)?.Item[0] == -1)
+                        {
+                            ++count;
+                        }
+                        else
+                        {
+                            if (countList == null) countList = new List<int>();
+                            countList.Add(++count);
+                            count = 0;
+                        }
+                    }
+                    return countList;
+                case ChessPiecesForm.左斜:
+                    throw new NotImplementedException();
+                case ChessPiecesForm.右斜:
+                    throw new NotImplementedException();
+                default: throw new NotImplementedException();
             }
-            return 0;
         }
     }
 

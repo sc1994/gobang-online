@@ -1,8 +1,9 @@
 var connection;
-const baseUrl = "http://localhost:5001";
+const socketUrl = "http://118.24.27.231:5001";
+const baseUrl = "http://localhost:4877";
 function init(room) {
   connection = new signalR.HubConnectionBuilder()
-    .withUrl(`${baseUrl}/ws?token=${room}`)
+    .withUrl(`${socketUrl}/ws?token=${room}`)
     .configureLogging(signalR.LogLevel.Warning)
     .build();
 

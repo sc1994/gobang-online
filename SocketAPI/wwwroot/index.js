@@ -23,10 +23,10 @@ var vm = new Vue({
         console.log("观战模式不可落子");
         return;
       }
-      if (this.downCount != 0) {
-        this.$message('等待对方落子');
-        return;
-      }
+      // if (this.downCount != 0) {
+      //   this.$message('等待对方落子');
+      //   return;
+      // }
       if (col.s) {
         this.$message('落在别的地方吧');
         return;
