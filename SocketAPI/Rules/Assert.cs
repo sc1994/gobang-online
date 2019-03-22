@@ -29,7 +29,7 @@ namespace SocketAPI.Rules
                 {
                     return true;
                 }
-                if (current.Where(x => x.Item[0] + x.Item[1] == i).MaxContinuous(ChessPiecesForm.左斜)?.Max() >= 5)
+                if (current.Where(x => x.Item[0] + x.Item[1] == i).MaxContinuous(ChessPiecesForm.右斜)?.Max() >= 5)
                 {
                     return true;
                 }
