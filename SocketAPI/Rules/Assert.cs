@@ -25,11 +25,11 @@ namespace SocketAPI.Rules
                 {
                     return true;
                 }
-                if (current.Count(x => x.Item[0] - x.Item[1] == i) >= 5)
+                if (current.Where(x => x.Item[0] - x.Item[1] == i).MaxContinuous(ChessPiecesForm.左斜)?.Max() >= 5)
                 {
                     return true;
                 }
-                if (current.Count(x => x.Item[0] + x.Item[1] == i) >= 5)
+                if (current.Where(x => x.Item[0] + x.Item[1] == i).MaxContinuous(ChessPiecesForm.左斜)?.Max() >= 5)
                 {
                     return true;
                 }
@@ -93,9 +93,39 @@ namespace SocketAPI.Rules
                     }
                     return countList;
                 case ChessPiecesForm.左斜:
-                    throw new NotImplementedException();
+                    checkerboard = checkerboard.OrderBy(x => x.Item[0]);
+                    for (var i = 0; i < checkerboard.Count(); i++)
+                    {
+                        if (checkerboard.ElementAt(i).Item[0] - checkerboard.ElementAtOrDefault(i + 1)?.Item[0] == -1
+                            && checkerboard.ElementAt(i).Item[1] - checkerboard.ElementAtOrDefault(i + 1)?.Item[1] == -1)
+                        {
+                            ++count;
+                        }
+                        else
+                        {
+                            if (countList == null) countList = new List<int>();
+                            countList.Add(++count);
+                            count = 0;
+                        }
+                    }
+                    return countList;
                 case ChessPiecesForm.右斜:
-                    throw new NotImplementedException();
+                    checkerboard = checkerboard.OrderBy(x => x.Item[0]);
+                    for (var i = 0; i < checkerboard.Count(); i++)
+                    {
+                        if (checkerboard.ElementAt(i).Item[0] - checkerboard.ElementAtOrDefault(i + 1)?.Item[0] == -1
+                            && checkerboard.ElementAt(i).Item[1] - checkerboard.ElementAtOrDefault(i + 1)?.Item[1] == 1)
+                        {
+                            ++count;
+                        }
+                        else
+                        {
+                            if (countList == null) countList = new List<int>();
+                            countList.Add(++count);
+                            count = 0;
+                        }
+                    }
+                    return countList;
                 default: throw new NotImplementedException();
             }
         }
