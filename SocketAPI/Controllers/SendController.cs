@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using SocketAPI.Rules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,35 +66,6 @@ namespace SocketAPI.Controllers
             return false;
         }
 
-        /// <summary>
-        /// 棋子
-        /// </summary>
-        public class ChessPieces
-        {
-            /// <summary>
-            /// 坐标
-            /// </summary>
-            [JsonProperty("c")]
-            [Obsolete("使用Item强类型属性，而不是字符串")]
-            public string Coordinate { get; set; }
-
-            /// <summary>
-            /// 坐标
-            /// </summary>
-#pragma warning disable 618
-            public int[] Item => Coordinate.Split(',').Select(x => Convert.ToInt32(x)).ToArray();
-#pragma warning restore 618
-
-            /// <summary>
-            /// 角色（落子人）
-            /// </summary>
-            [JsonProperty("s")]
-            public string Role { get; set; }
-            /// <summary>
-            /// 占位
-            /// </summary>
-            [JsonProperty("r")]
-            public string Place { get; set; }
-        }
+        
     }
 }
