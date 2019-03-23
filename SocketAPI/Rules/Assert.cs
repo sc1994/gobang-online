@@ -17,19 +17,19 @@ namespace SocketAPI.Rules
         {
             for (var i = 0; i < total; i++)
             {
-                if (current.Where(x => x.Item[0] == i).MaxContinuous(ChessPiecesForm.X轴)?.Max() >= 5) // x轴超5子
+                if (current.Where(x => x.Item[0] == i).ContinuouInfo(ChessPiecesForm.X轴)?.Max(x => x.Continuou) >= 5) // x轴超5子
                 {
                     return true;
                 }
-                if (current.Where(x => x.Item[1] == i).MaxContinuous(ChessPiecesForm.Y轴)?.Max() >= 5) // y轴超5子
+                if (current.Where(x => x.Item[1] == i).ContinuouInfo(ChessPiecesForm.Y轴)?.Max(x => x.Continuou) >= 5) // y轴超5子
                 {
                     return true;
                 }
-                if (current.Where(x => x.Item[0] - x.Item[1] == i).MaxContinuous(ChessPiecesForm.左斜)?.Max() >= 5)
+                if (current.Where(x => x.Item[0] - x.Item[1] == i).ContinuouInfo(ChessPiecesForm.左斜)?.Max(x => x.Continuou) >= 5)
                 {
                     return true;
                 }
-                if (current.Where(x => x.Item[0] + x.Item[1] == i).MaxContinuous(ChessPiecesForm.右斜)?.Max() >= 5)
+                if (current.Where(x => x.Item[0] + x.Item[1] == i).ContinuouInfo(ChessPiecesForm.右斜)?.Max(x => x.Continuou) >= 5)
                 {
                     return true;
                 }
@@ -46,88 +46,6 @@ namespace SocketAPI.Rules
         public static bool AssertChessboard2(string control, List<List<ChessPieces>> checkerboard)
         {
             return false;
-        }
-
-        /// <summary>
-        /// 连续性
-        /// </summary>
-        /// <param name="checkerboard">连续的棋子</param>
-        /// <param name="from">棋子形态</param>
-        /// <returns></returns>
-        private static List<int> MaxContinuous(this IEnumerable<ChessPieces> checkerboard, ChessPiecesForm from)
-        {
-            List<int> countList = null;
-            var count = 0;
-            switch (from)
-            {
-                case ChessPiecesForm.X轴:
-                    checkerboard = checkerboard.OrderBy(x => x.Item[1]);
-                    for (var i = 0; i < checkerboard.Count(); i++)
-                    {
-                        if (checkerboard.ElementAt(i).Item[1] - checkerboard.ElementAtOrDefault(i + 1)?.Item[1] == -1)
-                        {
-                            ++count;
-                        }
-                        else
-                        {
-                            if (countList == null) countList = new List<int>();
-                            countList.Add(++count);
-                            count = 0;
-                        }
-                    }
-                    return countList;
-                case ChessPiecesForm.Y轴:
-                    checkerboard = checkerboard.OrderBy(x => x.Item[0]);
-                    for (var i = 0; i < checkerboard.Count(); i++)
-                    {
-                        if (checkerboard.ElementAt(i).Item[0] - checkerboard.ElementAtOrDefault(i + 1)?.Item[0] == -1)
-                        {
-                            ++count;
-                        }
-                        else
-                        {
-                            if (countList == null) countList = new List<int>();
-                            countList.Add(++count);
-                            count = 0;
-                        }
-                    }
-                    return countList;
-                case ChessPiecesForm.左斜:
-                    checkerboard = checkerboard.OrderBy(x => x.Item[0]);
-                    for (var i = 0; i < checkerboard.Count(); i++)
-                    {
-                        if (checkerboard.ElementAt(i).Item[0] - checkerboard.ElementAtOrDefault(i + 1)?.Item[0] == -1
-                            && checkerboard.ElementAt(i).Item[1] - checkerboard.ElementAtOrDefault(i + 1)?.Item[1] == -1)
-                        {
-                            ++count;
-                        }
-                        else
-                        {
-                            if (countList == null) countList = new List<int>();
-                            countList.Add(++count);
-                            count = 0;
-                        }
-                    }
-                    return countList;
-                case ChessPiecesForm.右斜:
-                    checkerboard = checkerboard.OrderBy(x => x.Item[0]);
-                    for (var i = 0; i < checkerboard.Count(); i++)
-                    {
-                        if (checkerboard.ElementAt(i).Item[0] - checkerboard.ElementAtOrDefault(i + 1)?.Item[0] == -1
-                            && checkerboard.ElementAt(i).Item[1] - checkerboard.ElementAtOrDefault(i + 1)?.Item[1] == 1)
-                        {
-                            ++count;
-                        }
-                        else
-                        {
-                            if (countList == null) countList = new List<int>();
-                            countList.Add(++count);
-                            count = 0;
-                        }
-                    }
-                    return countList;
-                default: throw new NotImplementedException();
-            }
         }
     }
 
