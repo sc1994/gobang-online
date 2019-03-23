@@ -50,7 +50,13 @@ namespace SocketAPI
         /// <returns></returns>
         public T StringGet<T>(string key)
         {
-            return JsonConvert.DeserializeObject<T>(_db.StringGet(key));
+            var v = _db.StringGet(key);
+            if (string.IsNullOrWhiteSpace(v))
+            {
+                return default(T);
+            }
+
+            return JsonConvert.DeserializeObject<T>(v);
         }
 
         /// <summary>

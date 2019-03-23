@@ -1,6 +1,6 @@
 var connection;
-const socketUrl = "http://118.24.27.231:5001";
-const baseUrl = "http://localhost:4877";
+const socketUrl = "http://localhost:5001";
+const baseUrl = "http://localhost:5001";
 function init(room) {
   connection = new signalR.HubConnectionBuilder()
     .withUrl(`${socketUrl}/ws?token=${room}`)
@@ -26,8 +26,8 @@ function init(room) {
     vm.self = msg;
   });
 
-  connection.on("GameRestart", _ => {
-    alert("参战人员离开，游戏结束");
+  connection.on("GameRestart", msg => {
+    alert(msg);
     vm.chess = InitChess();
   });
 
@@ -58,18 +58,23 @@ function InitChess() {
     }
     chess.push(temp);
   }
+
+  if (vm && vm.control == "b") { //执黑
+    vm.downCount = 0;
+  } else if (vm && vm.control == "w") {// 执白
+    vm.downCount = 1;
+  }
+
   return chess;
 }
 
 function DownPiece(token, msg) {
-  // axios.get(`http://localhost:5001/service/send?token=${token}&msg=${msg}`)
-  //   .then(x => {
-  //     console.log(x);
-  //   })
-  //   .catch(e => {
-  //     console.log(e);
-  //   });
   connection.invoke("DownPiece", msg, token)
+    .catch(err => console.error(err.toString()));
+}
+
+function GameRestart(msg, token) {
+  connection.invoke("GameRestart", msg, token)
     .catch(err => console.error(err.toString()));
 }
 

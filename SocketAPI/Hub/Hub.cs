@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -71,6 +72,17 @@ namespace SocketAPI.Hub
         }
 
         /// <summary>
+        /// 游戏结束，重新开始
+        /// </summary>
+        /// <param name="msg">重新开始的原因</param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task GameRestart(string token, string msg)
+        {
+            await Clients.Group(token).GameRestart(msg);
+        }
+
+        /// <summary>
         /// 上线拦截
         /// </summary>
         /// <returns></returns>
@@ -81,9 +93,14 @@ namespace SocketAPI.Hub
             {
                 // 将token关联到connectionId
                 await Groups.AddToGroupAsync(Context.ConnectionId, token);
-                _redis.ListRightPush(RoomKey(token), Context.ConnectionId); ;
+                _redis.ListRightPush(RoomKey(token), Context.ConnectionId);
                 await Clients.Caller.ListenSelf(Context.ConnectionId);
                 await Clients.Group(token).AllOnLine(_redis.ListRange<string>(RoomKey(token)));
+                var init = _redis.StringGet<string>(ChessKey(token));
+                if (!string.IsNullOrWhiteSpace(init))
+                {
+                    await Clients.Group(token).DownPieceMsg(init);
+                }
             }
             await base.OnConnectedAsync();
         }
@@ -102,12 +119,18 @@ namespace SocketAPI.Hub
             var isRestart = sign.Contains(Context.ConnectionId);
             if (isRestart)
             {
-                await Clients.Groups(token).GameRestart("again");
+                await Clients.Groups(token).GameRestart("参战人员下线，游戏结束");
             }
 
             _redis.ListRemove(RoomKey(token), Context.ConnectionId);
+            await Debug(JsonConvert.SerializeObject(new { Token = RoomKey(token), Context.ConnectionId }));
             await Clients.Group(token).AllOnLine(_redis.ListRange<string>(RoomKey(token)));
             await base.OnDisconnectedAsync(exception);
+        }
+
+        private async Task Debug(string msg)
+        {
+            await File.AppendAllLinesAsync("D:/log.log", new[] { msg });
         }
     }
 }
