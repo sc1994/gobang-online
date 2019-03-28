@@ -19,18 +19,18 @@ var vm = new Vue({
         return "circle circle-hover circle-white";
     },
     down: function (col) {
-      // if (!this.personnel || this.personnel.length < 2) {
-      //   this.$message('参赛人员不足。');
-      //   return;
-      // }
-      // if (this.control == "k") {
-      //   console.log("观战模式不可落子");
-      //   return;
-      // }
-      // if (this.downCount != 0) {
-      //   this.$message('等待对方落子');
-      //   return;
-      // }
+      if (!this.personnel || this.personnel.length < 2) {
+        this.$message('参赛人员不足。');
+        return;
+      }
+      if (this.control == "k") {
+        console.log("观战模式不可落子");
+        return;
+      }
+      if (this.downCount != 0) {
+        this.$message('等待对方落子');
+        return;
+      }
       if (col.s) {
         this.$message('落在别的地方吧');
         return;

@@ -25,7 +25,7 @@ namespace SocketAPI.Rules
                 {
                     return true;
                 }
-                if (current.Where(x => x.Item[0] - x.Item[1] == i).ContinuouInfo(ChessPiecesForm.左斜)?.Max(x => x.Continuou) >= 5)
+                if (current.Where(x => Math.Abs(x.Item[0] - x.Item[1]) == i).ContinuouInfo(ChessPiecesForm.左斜)?.Max(x => x.Continuou) >= 5)
                 {
                     return true;
                 }
