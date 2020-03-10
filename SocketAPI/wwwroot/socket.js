@@ -1,6 +1,6 @@
 var connection;
-const socketUrl = "http://localhost:5001";
-const baseUrl = "http://localhost:5001";
+const socketUrl = "";
+const baseUrl = "";
 function init(room) {
   connection = new signalR.HubConnectionBuilder()
     .withUrl(`${socketUrl}/ws?token=${room}`)
