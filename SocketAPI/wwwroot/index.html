@@ -54,59 +54,59 @@
 </style>
 <html>
 
-    <head>
-        <meta charset="utf-8" />
-        <title></title>
-    </head>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
 
-    <body>
-        <div id="app">
-            <el-row :gutter="20">
-                <el-col :span="18">
-                    <el-card class="box-card">
-                        <div slot="header" class="clearfix">
-                            <span>棋盘</span><br>
-                            <span>我：{{self}}</span>
-                            <br>
-                            <span v-if="control=='b'">执黑</span>
-                            <span v-if="control=='w'">执白</span>
-                            <span v-if="control=='k'">观战</span>
-                            <el-button style="float: right; padding: 3px 0" type="text">操作</el-button>
-                        </div>
-                        <div style="text-align: center;">
-                            <h3 v-if="downCount==0">自方走棋</h3>
-                            <h3 v-else>对方走棋</h3>
-                        </div>
-                        <div style="text-align: -webkit-center;">
-                            <table>
-                                <tr v-for="(row,i) in chess">
-                                    <td v-for="(col,j) in row">
-                                        <template v-if="i!=chess.length-1&&j!=chess.length-1">
-                                            <div :class="circleDown(col)" @click="down(col)">
-                                            </div>
-                                        </template>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </el-card>
-                </el-col>
+<body>
+    <div id="app">
+        <el-row :gutter="20">
+            <el-col :span="18">
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span>棋盘</span><br>
+                        <span>我：{{self}}</span>
+                        <br>
+                        <span v-if="control=='b'">执黑</span>
+                        <span v-if="control=='w'">执白</span>
+                        <span v-if="control=='k'">观战</span>
+                        <el-button style="float: right; padding: 3px 0" type="text">操作</el-button>
+                    </div>
+                    <div style="text-align: center;">
+                        <h3 v-if="downCount==0">自方走棋</h3>
+                        <h3 v-else>对方走棋</h3>
+                    </div>
+                    <div style="text-align: -webkit-center;">
+                        <table>
+                            <tr v-for="(row,i) in chess">
+                                <td v-for="(col,j) in row">
+                                    <template v-if="i!=chess.length-1&&j!=chess.length-1">
+                                        <div :class="circleDown(col)" @click="down(col)">
+                                        </div>
+                                    </template>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </el-card>
+            </el-col>
 
-                <el-col :span="6">
-                    <el-card class="box-card">
-                        <div slot="header" class="clearfix">
-                            <span>在线用户</span>
-                            <el-button style="float: right; padding: 3px 0" type="text">操作</el-button>
-                        </div>
-                        <div v-for="item in personnel">{{item}}</div>
-                    </el-card>
-                </el-col>
-            </el-row>
-        </div>
-    </body>
+            <el-col :span="6">
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span>在线用户</span>
+                        <el-button style="float: right; padding: 3px 0" type="text">操作</el-button>
+                    </div>
+                    <div v-for="item in personnel">{{item}}</div>
+                </el-card>
+            </el-col>
+        </el-row>
+    </div>
+</body>
 
 </html>
-<script src="node_modules\@aspnet\signalr\dist\browser\signalr.js"></script>
+<script src="signalr.js"></script>
 <script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
 <script src="https://cdn.bootcss.com/vue/2.6.9/vue.min.js"></script>
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>

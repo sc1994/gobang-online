@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -29,13 +30,11 @@ namespace SocketAPI.Hub
     public class Hub : Microsoft.AspNetCore.SignalR.Hub<IHub>
     {
         private readonly HttpContext _httpContext;
-        private readonly RedisMethods _redis;
-        private static string RoomKey(string token) => $"room:{token}";
-        private static string ChessKey(string token) => $"chess:{token}";
+        private static ConcurrentDictionary<string, List<string>> Rooms = new ConcurrentDictionary<string, List<string>>();
+        private static ConcurrentDictionary<string, string> Chesss = new ConcurrentDictionary<string, string>();
 
         public Hub(IHttpContextAccessor hca)
         {
-            _redis = new RedisMethods();
             _httpContext = hca.HttpContext;
         }
 
@@ -67,8 +66,7 @@ namespace SocketAPI.Hub
         /// <returns></returns>
         public async Task DownPiece(string token, string chess)
         {
-            _redis.StringSet(ChessKey(token), chess);
-            await Clients.Group(token).DownPieceMsg(_redis.StringGet<string>(ChessKey(token)));
+            await Clients.Group(token).DownPieceMsg(chess);
         }
 
         /// <summary>
@@ -93,13 +91,21 @@ namespace SocketAPI.Hub
             {
                 // 将token关联到connectionId
                 await Groups.AddToGroupAsync(Context.ConnectionId, token);
-                _redis.ListRightPush(RoomKey(token), Context.ConnectionId);
-                await Clients.Caller.ListenSelf(Context.ConnectionId);
-                await Clients.Group(token).AllOnLine(_redis.ListRange<string>(RoomKey(token)));
-                var init = _redis.StringGet<string>(ChessKey(token));
-                if (!string.IsNullOrWhiteSpace(init))
+                List<string> ids;
+                if (Rooms.TryGetValue(token, out ids))
                 {
-                    await Clients.Group(token).DownPieceMsg(init);
+                    ids.Add(Context.ConnectionId);
+                }
+                else
+                {
+                    ids = new List<string> { Context.ConnectionId };
+                    Rooms.TryAdd(token, ids);
+                }
+                await Clients.Caller.ListenSelf(Context.ConnectionId);
+                await Clients.Group(token).AllOnLine(ids);
+                if (Chesss.TryGetValue(token, out var chess) && !string.IsNullOrWhiteSpace(chess))
+                {
+                    await Clients.Group(token).DownPieceMsg(chess);
                 }
             }
             await base.OnConnectedAsync();
@@ -115,16 +121,18 @@ namespace SocketAPI.Hub
             var token = _httpContext.Request.Query["token"];
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, token);
 
-            var sign = _redis.ListRange<string>(RoomKey(token), 0, 1);
-            var isRestart = sign.Contains(Context.ConnectionId);
-            if (isRestart)
+            List<string> ids;
+            if (Rooms.TryGetValue(token, out ids))
             {
-                await Clients.Groups(token).GameRestart("参战人员下线，游戏结束");
+                var isRestart = ids.Contains(Context.ConnectionId);
+                if (isRestart)
+                {
+                    await Clients.Groups(token).GameRestart("参战人员下线，游戏结束");
+                }
             }
-
-            _redis.ListRemove(RoomKey(token), Context.ConnectionId);
-            await Debug(JsonConvert.SerializeObject(new { Token = RoomKey(token), Context.ConnectionId }));
-            await Clients.Group(token).AllOnLine(_redis.ListRange<string>(RoomKey(token)));
+            ids.Remove(Context.ConnectionId);
+            await Debug(JsonConvert.SerializeObject(new { token, Context.ConnectionId }));
+            await Clients.Group(token).AllOnLine(ids);
             await base.OnDisconnectedAsync(exception);
         }
 

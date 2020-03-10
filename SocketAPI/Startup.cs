@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using StackExchange.Redis;
 using System;
 
 namespace SocketAPI
@@ -39,8 +38,8 @@ namespace SocketAPI
 
             app.UsePathBase("/service");    // 启用二级目录
             app.UseCors("SignalR");         // 启用跨域
-            //app.UseStaticFiles("/wwwroot"); // 静态文件服务
-            app.UseHttpsRedirection();      // 启用http上下文
+            app.UseDefaultFiles();
+            app.UseFileServer();
 
             app.UseMvc();
 
@@ -79,22 +78,6 @@ namespace SocketAPI
                     options.KeepAliveInterval = TimeSpan.FromSeconds(60); // 心跳包
                     options.EnableDetailedErrors = true;                  // 输出错误详细
                     options.HandshakeTimeout = TimeSpan.FromSeconds(60);  // 超时时长
-                })
-                .AddRedis(option =>
-                {
-                    option.ConnectionFactory = async writer =>
-                    {
-                        var connection = await ConnectionMultiplexer.ConnectAsync(Consts.RedisSite);
-                        connection.ConnectionFailed += (sender, e) =>           // redis连接失败记录日志
-                        {
-                            // todo 
-                        };
-                        connection.ErrorMessage += (sender, e) =>               // redis 发生错误异常的时候
-                        {
-                            // todo 
-                        };
-                        return connection;
-                    };
                 });
         }
 
